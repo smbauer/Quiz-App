@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import messagebox
 from quiz_brain import QuizBrain
 
 THEME_COLOR = "#375362"
@@ -29,9 +30,15 @@ class QuizInterface:
         self.window.mainloop()
 
     def get_next_question(self) -> None:
-        q_text = self.quiz.next_question()
-        self.canvas.itemconfig(self.question_text, text=q_text)        
-        # self.canvas.itemconfig(self.score_label, text=f"Score: {current_score}")
+        if self.quiz.still_has_questions():
+            q_text = self.quiz.next_question()
+            self.canvas.itemconfig(self.question_text, text=q_text)        
+            self.score_label.config(text=f"Score: {self.quiz.score}")
+        else:
+            messagebox.showinfo(title="Game Over", message=f"Final Score: {self.quiz.score}")
+            self.true_button.config(state="disabled")
+            self.false_button.config(state="disabled")
+
     
     def answer_true(self) -> None:
         self.give_feedback(self.quiz.check_answer("True"))
@@ -41,6 +48,7 @@ class QuizInterface:
 
     def give_feedback(self, is_correct: bool) -> None:
         if is_correct:
-            print(f"Correct! Score: {self.quiz.score}")
+            messagebox.showinfo(title="Result", message=f"Correct! Score: {self.quiz.score}")
         else:
-            print(f"Wrong :( Score: {self.quiz.score}")
+            messagebox.showinfo(title="Result", message=f"Wrong :( Score: {self.quiz.score}")
+        self.get_next_question()
